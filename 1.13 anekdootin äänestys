@@ -12,8 +12,14 @@ const App = () => {
     'The only way to go fast, is to go well.'
   ]
 
+  // Olio äänet: käytetään anekdoottien indeksejä
+  const initialVotes = {}
+  anecdotes.forEach((_, index) => {
+    initialVotes[index] = 0
+  })
+
   const [selected, setSelected] = useState(0)
-  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+  const [votes, setVotes] = useState(initialVotes)
 
   const handleNextAnecdote = () => {
     const randomIndex = Math.floor(Math.random() * anecdotes.length)
@@ -21,13 +27,18 @@ const App = () => {
   }
 
   const handleVote = () => {
-    const newVotes = [...votes]
-    newVotes[selected] += 1
-    setVotes(newVotes)
+    // Kopioidaan votes-olio ja päivitetään valitun anekdootin äänet
+    setVotes(prevVotes => ({
+      ...prevVotes,
+      [selected]: prevVotes[selected] + 1
+    }))
   }
 
-  const maxVotes = Math.max(...votes)
-  const mostVotedIndex = votes.indexOf(maxVotes)
+  // Etsitään anekdootti, jolla on eniten ääniä
+  const maxVotes = Math.max(...Object.values(votes))
+  const mostVotedIndex = Object.keys(votes).find(
+    key => votes[key] === maxVotes
+  )
 
   return (
     <div>
